@@ -1,8 +1,8 @@
 # Deploy
-Builds and deploy Angular/Node.js apps into APK file and to remote server.
+Builds and deploys Angular/Node.js apps into APK file and to remote server.
 
 ## Params
-|param          |Description                                            |Required    |Type  |
+|Param          |Description                                            |Required    |Type  |
 |:--------------|:------------------------------------------------------|:----------:|:----:|
 |java_path      |Java 8 path to used to build APK file                  |Only for APK|Path  |
 |web_dir        |Target folder of the remote server                     |Yes         |Path  |

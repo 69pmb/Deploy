@@ -28,3 +28,34 @@ Builds and deploys Angular/Node.js apps into APK file or to remote server.
     1. Copies the *dist* generated folder to the *web_dir*
     1. Moves the *package.json* and *server.js* files if not exists and replacing app name and port with the ones specifies. *Forever* will be used to run the application
     1. `yarn` if no *node_modules* folder found
+
+# Docker 
+
+Builds and deploys Angular/Node.js apps using Docker.
+
+## Build
+
+To build an docker image, run the following command:
+```bash
+docker build --build-arg GITHUB_DIR=user_id --build-arg GITHUB_PROJECT=project_id --build-arg GITHUB_HASH=commit_hash -t image_name https://raw.githubusercontent.com/69pmb/Deploy/main/docker/ng-build/Dockerfile
+```
+with the following parameters:  
+- `GITHUB_DIR`: the github profile of the project
+- `GITHUB_PROJECT`: the github project name
+- `GITHUB_HASH`: the git hash commit of the project version to build
+- `image_name`: your image name
+
+## Run
+
+Once the image built, you can run it with the following:  
+```bash
+docker run --name my_name --restart unless-stopped -d -p my_port:8080 -t image_name
+```
+with the following parameters:  
+- `my_name`: container name
+- `my_port`: the expose container port
+- `image_name`: the previously specified image name
+
+## Scripts
+
+You can also use the `build.sh` and `run.sh` scripts to generate the previous docker commands.

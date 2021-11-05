@@ -20,7 +20,7 @@ RUN git clone -n https://github.com/${GITHUB_DIR}/${GITHUB_PROJECT}.git && \
     npm ci --only=production && \
     npm run build --extract-licenses=false
 
-FROM pmb69/ng-nginx:0.1.0
+FROM pmb69/ng-nginx:0.1.1
 
 ARG GITHUB_PROJECT
 

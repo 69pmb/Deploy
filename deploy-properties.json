@@ -20,6 +20,10 @@
       "name": "NgWeatherWatcher",
       "size": 300,
       "port": 6363
+    },
+    {
+      "name": "WeatherWatcher",
+      "port": 7878
     }
   ]
 }

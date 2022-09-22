@@ -1,22 +1,17 @@
-ARG NODE_VERSION=16.13.1-alpine3.12
 ARG NG_NGINX_VERSION=0.1.1
-ARG ANGULAR_VERSION=12.2.13
+ARG ANGULAR_VERSION=14
 ARG GITHUB_DIR
 ARG GITHUB_PROJECT
 ARG GITHUB_HASH
+ARG BUILD_DATE
 
-FROM node:${NODE_VERSION} AS builder
+FROM pmb69/ng-cli:${ANGULAR_VERSION} AS builder
 
-ARG ANGULAR_VERSION
 ARG GITHUB_DIR
 ARG GITHUB_PROJECT
 ARG GITHUB_HASH
 
 WORKDIR /tmp
-
-RUN apk -U upgrade && \
-    apk add --no-cache git openssh && \
-    npm i -g @angular/cli@${ANGULAR_VERSION}
 
 RUN git clone -n https://github.com/${GITHUB_DIR}/${GITHUB_PROJECT}.git && \
     cd ${GITHUB_PROJECT} && \
@@ -27,8 +22,6 @@ RUN git clone -n https://github.com/${GITHUB_DIR}/${GITHUB_PROJECT}.git && \
 FROM pmb69/ng-nginx:${NG_NGINX_VERSION}
 
 # Args
-ARG NODE_VERSION
-ARG ANGULAR_VERSION
 ARG NG_NGINX_VERSION
 ARG GITHUB_DIR
 ARG GITHUB_PROJECT
@@ -36,9 +29,7 @@ ARG GITHUB_HASH
 ARG BUILD_DATE
 
 # Labels
-LABEL node-version=${NODE_VERSION}
 LABEL ng-nginx-version=${NG_NGINX_VERSION}
-LABEL angular-version=$ANGULAR_VERSION
 LABEL org.label-schema.schema-version="1.0"
 LABEL org.label-schema.name="pmb69/ng-nginx"
 LABEL org.label-schema.url="https://github.com/${GITHUB_DIR}/${GITHUB_PROJECT}"

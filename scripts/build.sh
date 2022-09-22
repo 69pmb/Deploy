@@ -4,22 +4,6 @@ repo="https://raw.githubusercontent.com/69pmb/Deploy"
 url="$repo/main/docker/ng-build/Dockerfile"
 dockerfile=$(curl -s $url)
 
-# Mapping latest Angular version by Major version
-declare -A NgMap
-NgMap[10]=10.2.4
-NgMap[11]=11.2.19
-NgMap[12]=12.2.17
-NgMap[13]=13.3.8
-NgMap[14]=14.0.6
-
-# Mapping Docker Node alpine image by Angular version
-declare -A NodeMap
-NodeMap[10]=14.18.2-alpine3.12
-NodeMap[11]=14.18.2-alpine3.12
-NodeMap[12]=14.18.2-alpine3.12
-NodeMap[13]=16.12.0-alpine3.12
-NodeMap[14]=16.12.0-alpine3.12
-
 function getArgVersion() {
   local version=$(echo $dockerfile | sed 's/ /\n/g' | grep -i ''"$1"'_version=' | cut -d = -f2)
   echo $version
@@ -81,9 +65,6 @@ do
     angularVersion=$(getAngularVersion $directory $project $branch)
     echo "Angular version detected: $angularVersion"
     
-    angular=${NgMap[$angularVersion]} 
-    node=${NodeMap[$angularVersion]} 
-
     let nginx;
     nginx_version=$(getArgVersion "ng_nginx")
     read -p "Enter the pmb69/Ng-Nginx version [$nginx_version]: " nginx
@@ -100,7 +81,7 @@ do
 done
 
 clean_branch=$(echo $branch | sed -e "s/\//-/g")
-cmd="docker build --build-arg GITHUB_DIR=$directory --build-arg GITHUB_PROJECT=$project --build-arg GITHUB_HASH=$branch --build-arg NODE_VERSION=$node --build-arg ANGULAR_VERSION=$angular --build-arg NG_NGINX_VERSION=$nginx --build-arg BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" -t ${project,,}.$clean_branch $url"
+cmd="docker build --build-arg GITHUB_DIR=$directory --build-arg GITHUB_PROJECT=$project --build-arg GITHUB_HASH=$branch --build-arg ANGULAR_VERSION=$angularVersion --build-arg NG_NGINX_VERSION=$nginx --build-arg BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" -t ${project,,}.$clean_branch $url"
 
 if [[ $cache == 'n' ]]
 then

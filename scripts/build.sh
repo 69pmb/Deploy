@@ -1,8 +1,10 @@
 #!/bin/bash
 
+buildBranch="main"
 repo="https://raw.githubusercontent.com/69pmb/Deploy"
-url="$repo/main/docker/ng-build/Dockerfile"
-dockerfile=$(curl -s $url)
+ngUrl="$repo/$buildBranch/docker/ng-build/Dockerfile"
+jUrl="$repo/$buildBranch/docker/jbuild/Dockerfile"
+dockerfile=$(curl -s $ngUrl)
 
 # Mapping Docker Node alpine image by Angular version
 declare -A NodeMap
@@ -40,9 +42,17 @@ function getAngularVersion() {
   echo $ngVersion
 }
 
+function isAngularProject() {
+  local isNg=$(curl -s -I "https://raw.githubusercontent.com/$1/$2/$3/package.json" | grep -E "^HTTP" | awk -F " " '{print $2}')
+  if [[ $isNg -eq 200 ]]
+  then echo 1
+  else echo 0
+  fi
+}
+
 let branch;
 echo "Which project do you want to build ?"
-apps_url=$(curl -s "$repo/main/deploy-properties.json")
+apps_url=$(curl -s "$repo/$buildBranch/deploy-properties.json")
 select project in $(echo $apps_url | jq .apps[].name | sed 's/"//g') Manual
 do
   let directory;
@@ -70,15 +80,20 @@ do
       branch=${br:-master}
     fi
 
-    angularVersion=$(getAngularVersion $directory $project $branch)
-    echo "Angular version detected: $angularVersion"
-    
-    node=${NodeMap[$angularVersion]} 
+    isAngular=$(isAngularProject $directory $project $branch)
 
-    let nginx;
-    nginx_version=$(getArgVersion "ng_nginx")
-    read -p "Enter the pmb69/Ng-Nginx version [$nginx_version]: " nginx
-    nginx=${nginx:-$nginx_version}
+    if [[ $isAngular -eq 1 ]]
+    then
+      angularVersion=$(getAngularVersion $directory $project $branch)
+      echo "Angular version detected: $angularVersion"
+      
+      node=${NodeMap[$angularVersion]} 
+
+      let nginx;
+      nginx_version=$(getArgVersion "ng_nginx")
+      read -p "Enter the pmb69/Ng-Nginx version [$nginx_version]: " nginx
+      nginx=${nginx:-$nginx_version}
+    fi
 
     let cache;
     read -p "Use cache [y]: " cache
@@ -91,7 +106,14 @@ do
 done
 
 clean_branch=$(echo $branch | sed -e "s/\//-/g")
-cmd="docker build --build-arg GITHUB_DIR=$directory --build-arg GITHUB_PROJECT=$project --build-arg GITHUB_HASH=$branch --build-arg NODE_VERSION=$node --build-arg NG_NGINX_VERSION=$nginx --build-arg BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" -t ${project,,}.$clean_branch $url"
+cmd="docker build --build-arg GITHUB_DIR=$directory --build-arg GITHUB_PROJECT=$project --build-arg GITHUB_HASH=$branch --build-arg BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" "
+
+if [[ $isAngular -eq 1 ]] 
+then 
+  cmd+=" --build-arg NODE_VERSION=$node --build-arg NG_NGINX_VERSION=$nginx -t ${project,,}.$clean_branch $ngUrl"
+else 
+  cmd+=" -t ${project,,}.$clean_branch $jUrl"
+fi
 
 if [[ $cache == 'n' ]]
 then

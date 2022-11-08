@@ -3,7 +3,7 @@ ARG GITHUB_DIR
 ARG GITHUB_PROJECT
 ARG GITHUB_HASH
 
-FROM eclipse-temurin:11-jdk-jammy AS builder
+FROM eclipse-temurin:17.0.5_8-jdk-jammy AS builder
 
 ARG GITHUB_DIR
 ARG GITHUB_PROJECT
@@ -20,7 +20,7 @@ ADD https://github.com/${GITHUB_DIR}/${GITHUB_PROJECT}.git#${GITHUB_HASH} .
 
 RUN mvn clean package -DskipTests -Dgcf.skip=true -q
 
-FROM eclipse-temurin:11-jre-jammy
+FROM eclipse-temurin:17.0.5_8-jre-jammy
 
 ARG GITHUB_DIR
 ARG GITHUB_PROJECT

@@ -10,9 +10,8 @@ ARG GITHUB_PROJECT
 ARG GITHUB_HASH
 
 RUN set -ex && \
-    apt-get -y update && \
-    apt-get -y install maven && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get -qq -y update && \
+    apt-get -qq -y install maven
 
 WORKDIR /tmp/${GITHUB_PROJECT}
 

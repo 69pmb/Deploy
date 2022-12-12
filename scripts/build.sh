@@ -1,10 +1,11 @@
 #!/bin/bash
+set -euxo pipefail
 
 buildBranch="main"
-repo="https://raw.githubusercontent.com/69pmb/Deploy"
-ngUrl="$repo/$buildBranch/docker/ng-build/Dockerfile"
-jUrl="$repo/$buildBranch/docker/jbuild/Dockerfile"
-dockerfile=$(curl -s $ngUrl)
+deployRepo="https://raw.githubusercontent.com/69pmb/Deploy"
+ngUrl="$deployRepo/$buildBranch/docker/ng-build/Dockerfile"
+jUrl="$deployRepo/$buildBranch/docker/jbuild/Dockerfile"
+ngDockerfile=$(curl -s $ngUrl)
 
 # Mapping Docker Node alpine image by Angular version
 declare -A NodeMap
@@ -14,8 +15,8 @@ NodeMap[12]=14.18.2-alpine3.12
 NodeMap[13]=16.12.0-alpine3.12
 NodeMap[14]=16.12.0-alpine3.12
 
-function getArgVersion() {
-  local version=$(echo $dockerfile | sed 's/ /\n/g' | grep -i ''"$1"'_version=' | cut -d = -f2)
+function getNgArgVersion() {
+  local version=$(echo $ngDockerfile | sed 's/ /\n/g' | grep -i ''"$1"'_version=' | cut -d = -f2)
   echo $version
 }
 
@@ -52,7 +53,7 @@ function isAngularProject() {
 
 let branch;
 echo "Which project do you want to build ?"
-apps_url=$(curl -s "$repo/$buildBranch/deploy-properties.json")
+apps_url=$(curl -s "$deployRepo/$buildBranch/deploy-properties.json")
 select project in $(echo $apps_url | jq .apps[].name | sed 's/"//g') Manual
 do
   let directory;
@@ -90,7 +91,7 @@ do
       node=${NodeMap[$angularVersion]} 
 
       let nginx;
-      nginx_version=$(getArgVersion "ng_nginx")
+      nginx_version=$(getNgArgVersion "ng_nginx")
       read -p "Enter the pmb69/Ng-Nginx version [$nginx_version]: " nginx
       nginx=${nginx:-$nginx_version}
     fi

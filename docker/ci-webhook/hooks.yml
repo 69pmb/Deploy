@@ -1,0 +1,14 @@
+- id: deploy
+  execute-command: deploy.sh
+  pass-arguments-to-command:
+    - source: url
+      name: project
+    - source: url
+      name: branch
+    - source: url
+      name: args
+    - source: url
+      name: directory
+    - source: url
+      name: port
+  command-working-directory: "/config"

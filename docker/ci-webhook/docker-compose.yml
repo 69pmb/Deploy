@@ -1,0 +1,13 @@
+services:
+  webhook:
+    image: pmb69/ci-webhook
+    container_name: ci-webhook
+    command: -verbose -hooks=hooks.yml -hotreload
+    environment:
+      - TZ=Europe/Paris
+      - DOCKER_BUILDKIT=1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 9900:9000
+    restart: unless-stopped

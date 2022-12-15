@@ -14,4 +14,3 @@ mkdir -p deploy
 cd deploy
 update "run"
 update "build"
-update "deploy"

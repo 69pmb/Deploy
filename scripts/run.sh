@@ -1,5 +1,4 @@
 #!/bin/bash
-set -eo pipefail
 
 function getPort() {
   apps_url=$(curl -s "https://raw.githubusercontent.com/69pmb/Deploy/main/deploy-properties.json")

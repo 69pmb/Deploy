@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile-upstream:master-labs
-ARG NODE_VERSION=16.13.1-alpine3.12
+ARG NODE_VERSION=17.3.0-alpine3.12
 ARG NG_NGINX_VERSION=latest
 ARG GITHUB_DIR
 ARG GITHUB_PROJECT

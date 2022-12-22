@@ -1,0 +1,17 @@
+name: Deploy
+inputs:
+  url:
+    description: "Deploy url"
+    required: true
+  args:
+    description: "Deploy arguments"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Build and deploy
+      env:
+        GITHUB_PROJECT: ${{github.repository}}
+        BRANCH: ${{ github.ref_name }}
+      run: curl -sG ${{ inputs.url }} -d project=$GITHUB_PROJECT -d branch=$BRANCH -d args=${{ inputs.args }}
+      shell: bash

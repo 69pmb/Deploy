@@ -1,0 +1,25 @@
+name: Typescript Quality
+
+inputs:
+  node-version:
+    description: "NodeJs version"
+    default: "16.x"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v3
+    - name: Set up NodeJs
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: "npm"
+    - name: Install dependencies
+      run: npm ci --ignore-scripts
+      shell: bash
+    - name: Compile Typescript
+      run: npx tsc --noEmit
+      shell: bash
+    - name: Lint
+      run: npm run lint --if-present
+      shell: bash

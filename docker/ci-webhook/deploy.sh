@@ -79,9 +79,14 @@ fi
 clean_branch=$(echo $branch | sed -e "s/\//-/g")
 if [[ -z $directory ]]
 then
-    directory="69pmb"
-    echo "Directory not provided, default is '$directory'";
-    project=$(echo $project | sed -e "s/$directory\\///g")
+    if [[ $(echo $project | grep '/' | wc -l) -eq 1 ]]
+    then
+        directory=$(echo $project | cut -d "/" -f1)
+        project=$(echo $project | cut -d "/" -f2)
+    else
+        directory="69pmb"
+        echo "Directory not provided, default is '$directory'";
+    fi
 fi
 
 apps=$(curl -s $deployFile)

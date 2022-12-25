@@ -5,8 +5,9 @@ set -eo pipefail
 project=$1
 branch=$2
 args=$3
-directory=$4
-port=$5
+confFile=$4
+directory=$5
+port=$6
 
 ## Constants
 buildBranch="main"
@@ -63,6 +64,18 @@ function getPort() {
   then echo 8080
   else echo $app_port
   fi
+}
+
+# Replace placeholder value with given args in specific file
+function replaceArgs() {
+    file=$1
+    for i in $(echo $2 | tr "$keySeparator" "\n")
+    do
+        key=$(echo $i | cut -d $valueSeparator -f 1)
+        value=$(echo $i | cut -d $valueSeparator -f 2)
+        file=$(echo "$file" | sed "s/{{$key}}/$value/")
+    done
+    echo $file
 }
 
 # Validate & process arguments
@@ -134,19 +147,24 @@ then
     then
         port=$(getPort "$apps" $name)
     fi
+
     cmdRun="docker run --name $name --restart unless-stopped -d -p $port:8080 -t $image"
     echo -e "Running with the following command:\n$(echo $cmdRun | sed 's/--/\n --/g' | sed 's/https/\n https/g')"
     docker ps -qaf "publish=$port" | xargs -r docker rm -f
     docker ps -qaf "name=$name" | xargs -r docker rm -f
     eval "$cmdRun"
+    if [[ ! -z $confFile ]]
+    then
+        docker cp $name:$confFile .
+        fileName=$(echo $confFile | rev | cut -d "/" -f1 | rev)
+        conf=$(cat $fileName)
+        conf=$(replaceArgs "$conf" "$args")
+        echo $conf > $fileName
+        docker cp $fileName $name:$(echo $confFile | sed "s/$fileName//g")
+    fi
 else
     # using docker compose file to run the project
-    for i in $(echo $args | tr "$keySeparator" "\n")
-    do
-        key=$(echo $i | cut -d $valueSeparator -f 1)
-        value=$(echo $i | cut -d $valueSeparator -f 2)
-        compose=$(echo "$compose" | sed "s/{{$key}}/$value/")
-    done
+    compose=$(replaceArgs "$compose" "$args")
     compose=$(echo "$compose" | sed "s/image: $name[a-z\.]*/image: $image/")
     docker ps -aqf 'label=com.docker.compose.project=$project' | xargs -r docker rm -f
     echo "$compose" > docker-compose.yml

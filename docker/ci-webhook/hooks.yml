@@ -8,6 +8,8 @@
     - source: url
       name: args
     - source: url
+      name: confFile
+    - source: url
       name: directory
     - source: url
       name: port

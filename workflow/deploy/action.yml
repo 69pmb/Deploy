@@ -5,6 +5,8 @@ inputs:
     required: true
   args:
     description: "Deploy arguments"
+  confFile:
+    description: "Configuration absolute path, if not provided searching for a docker-compose file"
 
 runs:
   using: "composite"
@@ -13,5 +15,5 @@ runs:
       env:
         GITHUB_PROJECT: ${{github.repository}}
         BRANCH: ${{ github.ref_name }}
-      run: curl -sG ${{ inputs.url }} -d project=$GITHUB_PROJECT -d branch=$BRANCH -d args=${{ inputs.args }}
+      run: curl -sG ${{ inputs.url }} -d project=$GITHUB_PROJECT -d branch=$BRANCH -d args=${{ inputs.args }} -d confFile=${{ inputs.confFile }}
       shell: bash

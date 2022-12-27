@@ -31,6 +31,7 @@ ARG GITHUB_DIR
 ARG GITHUB_PROJECT
 ARG GITHUB_HASH
 ARG BUILD_DATE
+ARG ENV_VAR
 
 # Labels
 LABEL node-version=${NODE_VERSION}
@@ -47,11 +48,12 @@ WORKDIR /usr/share/nginx/html
 
 COPY --from=builder /tmp/${GITHUB_PROJECT}/dist .
 
-RUN if [ -f assets/env.template.js ]; then \
+RUN if [ $ENV_VAR ]; then \
+    cat assets/configuration.json | sed "s/{{/$/" | sed "s/}}//" > assets/configuration.json && \
     apk add --update libintl && \
-    apk add --virtual build_deps gettext &&  \
+    apk add --virtual build_deps gettext && \
     cp /usr/bin/envsubst /usr/local/bin/envsubst && \
     apk del build_deps && \
     rm -rf /var/cache/apk/* ; fi
 
-CMD ["/bin/sh",  "-c",  "if [ -f assets/env.template.js ]; then envsubst < assets/env.template.js > assets/env.js ; fi && exec nginx -g 'daemon off;'"]
+CMD ["/bin/sh",  "-c",  "if [ $ENV_VAR ]; then conf=$(envsubst < assets/configuration.json); echo $conf > assets/configuration.json; fi && exec nginx -g 'daemon off;'"]

@@ -69,8 +69,9 @@ function getPort() {
 # Replace placeholder value with given args in specific file
 function replaceArgs() {
     file=$1
-    for i in $(echo $2 | tr "$keySeparator" "\n")
-    do
+    IFS=$keySeparator read -a args <<< $2
+    for i in "${args[@]}"
+     do
         key=$(echo $i | cut -d $valueSeparator -f 1)
         value=$(echo $i | cut -d $valueSeparator -f 2)
         file=$(echo "$file" | sed "s/{{$key}}/$value/")

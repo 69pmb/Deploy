@@ -1,5 +1,4 @@
 #!/bin/bash
-set -euxo pipefail
 
 buildBranch="main"
 deployRepo="https://raw.githubusercontent.com/69pmb/Deploy"

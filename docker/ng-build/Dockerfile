@@ -16,6 +16,9 @@ WORKDIR /tmp/${GITHUB_PROJECT}
 ADD https://raw.githubusercontent.com/${GITHUB_DIR}/${GITHUB_PROJECT}/${GITHUB_HASH}/package.json .
 ADD https://raw.githubusercontent.com/${GITHUB_DIR}/${GITHUB_PROJECT}/${GITHUB_HASH}/package-lock.json .
 
+RUN apk -U upgrade && \
+    apk add --no-cache git openssh
+
 RUN npm ci --ignore-scripts
 
 ADD https://github.com/${GITHUB_DIR}/${GITHUB_PROJECT}.git#${GITHUB_HASH} .

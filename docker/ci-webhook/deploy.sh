@@ -87,7 +87,7 @@ then
 fi
 if [[ -z $branch ]]
 then
-    branch="master"
+    branch="main"
     echo "Branch not provided, default is '$branch'";
 fi
 clean_branch=$(echo $branch | sed -e "s/\//-/g")

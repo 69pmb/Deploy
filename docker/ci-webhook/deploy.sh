@@ -76,7 +76,7 @@ function replaceArgs() {
         value=$(echo $i | cut -d $valueSeparator -f 2)
         file=$(echo "$file" | sed "s/{{$key}}/$value/")
     done
-    echo $file
+    echo "$file"
 }
 
 # Validate & process arguments
@@ -148,11 +148,10 @@ then
     then
         port=$(getPort "$apps" $name)
     fi
-
     cmdRun="docker run --name $name --restart unless-stopped -d -p $port:8080 -t $image"
     echo -e "Running with the following command:\n$(echo $cmdRun | sed 's/--/\n --/g' | sed 's/https/\n https/g')"
-    docker ps -qaf "publish=$port" | xargs -r docker rm -f
     docker ps -qaf "name=$name" | xargs -r docker rm -f
+    docker ps -qaf "publish=$port" | xargs -r docker rm -f
     eval "$cmdRun"
     if [[ ! -z $confFile ]]
     then
@@ -160,7 +159,7 @@ then
         fileName=$(echo $confFile | rev | cut -d "/" -f1 | rev)
         conf=$(cat $fileName)
         conf=$(replaceArgs "$conf" "$args")
-        echo $conf > $fileName
+        echo "$conf" > $fileName
         docker cp $fileName $name:$(echo $confFile | sed "s/$fileName//g")
     fi
 else

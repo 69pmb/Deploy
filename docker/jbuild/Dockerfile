@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile-upstream:master-labs
+# syntax=docker/dockerfile-upstream:1.5.1-labs
 ARG GITHUB_DIR
 ARG GITHUB_PROJECT
 ARG GITHUB_HASH

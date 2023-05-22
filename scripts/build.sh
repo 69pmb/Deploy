@@ -76,8 +76,8 @@ do
     branch=$(selectBranch "$directory" "$project")
     if [[ $branch == "Manual" ]]
     then
-      read -p "Enter the commit hash [master]: " br
-      branch=${br:-master}
+      read -p "Enter the commit hash [main]: " br
+      branch=${br:-main}
     fi
 
     isAngular=$(isAngularProject $directory $project $branch)

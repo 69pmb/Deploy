@@ -43,7 +43,7 @@ function isBranchExist() {
 # Find Angular version used in project
 function getAngularVersion() {
     package=$(curl -s "https://raw.githubusercontent.com/$1/$2/$3/package.json")
-    local ngVersion=$(echo $package | jq '.dependencies["@angular/core"]' | sed 's/"//g' | cut -d. -f1 | sed 's/\^//g')
+    local ngVersion=$(echo $package | jq '.dependencies["@angular/core"]' | sed 's/["|~|^]*//g' | cut -d. -f1)
     echo $ngVersion
 }
 

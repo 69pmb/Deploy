@@ -1,4 +1,4 @@
-FROM thecatlady/webhook:2.8.0
+FROM thecatlady/webhook:2.8.1
 
 RUN apk add --update --no-cache bash jq git docker docker-cli-compose
 

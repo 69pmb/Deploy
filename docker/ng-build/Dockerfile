@@ -23,7 +23,7 @@ RUN npm ci --ignore-scripts
 
 ADD https://github.com/${GITHUB_DIR}/${GITHUB_PROJECT}.git#${GITHUB_HASH} .
 
-RUN npx ng build --configuration production --progress false --extract-licenses=false
+RUN npx ng build --configuration production --progress false --extract-licenses=true
 
 FROM pmb69/ng-nginx:${NG_NGINX_VERSION}
 
@@ -50,6 +50,8 @@ LABEL org.label-schema.build-date=$BUILD_DATE
 WORKDIR /usr/share/nginx/html
 
 COPY --from=builder /tmp/${GITHUB_PROJECT}/dist .
+
+RUN rm 3rdpartylicenses.txt
 
 RUN if [ $ENV_VAR ]; then \
     cat assets/configuration.json | sed "s/{{/$/" | sed "s/}}//" > assets/configuration.json && \

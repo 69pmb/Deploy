@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile-upstream:master-labs
-ARG NODE_VERSION=16.13.1-alpine3.12
+ARG NODE_VERSION=16.20.0-alpine3.17
 ARG NG_NGINX_VERSION=latest
 ARG GITHUB_DIR
 ARG GITHUB_PROJECT
@@ -14,16 +14,20 @@ ARG GITHUB_HASH
 WORKDIR /tmp/${GITHUB_PROJECT}
 
 ADD https://raw.githubusercontent.com/${GITHUB_DIR}/${GITHUB_PROJECT}/${GITHUB_HASH}/package.json .
-ADD https://raw.githubusercontent.com/${GITHUB_DIR}/${GITHUB_PROJECT}/${GITHUB_HASH}/package-lock.json .
+ADD https://raw.githubusercontent.com/${GITHUB_DIR}/${GITHUB_PROJECT}/${GITHUB_HASH}/pnpm-lock.yaml .
 
 RUN apk -U upgrade && \
-    apk add --no-cache git openssh
+    apk add --no-cache git openssh && \
+    if [[ $(echo "$(node -v | sed 's/v//g' | cut -d. -f1) >= 16" | bc) -eq 1 ]]; then \
+    corepack enable && \
+    corepack prepare pnpm@latest --activate; else \
+    npm install -g pnpm ; fi
 
-RUN npm ci --ignore-scripts
+RUN pnpm i --frozen-lockfile --ignore-scripts
 
 ADD https://github.com/${GITHUB_DIR}/${GITHUB_PROJECT}.git#${GITHUB_HASH} .
 
-RUN npx ng build --configuration production --progress false --extract-licenses=true
+RUN pnpm build --configuration production --progress false --extract-licenses=true
 
 FROM pmb69/ng-nginx:${NG_NGINX_VERSION}
 

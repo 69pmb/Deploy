@@ -4,11 +4,12 @@ set -eo pipefail
 ## Script's arguments
 project=$1
 branch=$2
-deployBranch=$3
-args=$4
-confFile=$5
-directory=$6
-port=$7
+sha=$3
+deployBranch=$4
+args=$5
+confFile=$6
+directory=$7
+port=$8
 
 ## Constants
 deployRepo="https://raw.githubusercontent.com/69pmb/Deploy"
@@ -26,6 +27,7 @@ NodeMap[11]=14.18.2-alpine3.12
 NodeMap[12]=14.18.2-alpine3.12
 NodeMap[13]=16.20.0-alpine3.17
 NodeMap[14]=16.20.0-alpine3.17
+NodeMap[15]=16.20.0-alpine3.17
 
 # Find docker file argument value
 function getArgVersion() {
@@ -54,6 +56,16 @@ function isAngularProject() {
         echo 1
     else
         echo 0
+    fi
+}
+
+# Test if project is an pnpm one
+function isPnpmProject() {
+    local isPnpm=$(curl -s -I "https://raw.githubusercontent.com/$1/$2/$3/pnpm-lock.yaml" | grep -E "^HTTP" | awk -F " " '{print $2}')
+    if [[ $isPnpm -eq 200 ]]; then
+        echo "pnpm"
+    else
+        echo "npm"
     fi
 }
 
@@ -117,7 +129,7 @@ if [[ $isBrExist -eq 0 ]]; then
 fi
 
 # Build docker image
-cmdBuild="docker build --build-arg GITHUB_DIR=$directory --build-arg GITHUB_PROJECT=$project --build-arg GITHUB_HASH=$branch --build-arg BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" "
+cmdBuild="docker build --build-arg GITHUB_DIR=$directory --build-arg GITHUB_PROJECT=$project --build-arg GITHUB_HASH=$branch --build-arg GITHUB_SHA=$sha --build-arg BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" "
 image=${project,,}.$clean_branch
 
 isAngular=$(isAngularProject $directory $project $branch)
@@ -128,7 +140,8 @@ if [[ $isAngular -eq 1 ]]; then
     node=${NodeMap[$angularVersion]}
 
     nginx_version=$(getArgVersion "ng_nginx")
-    cmdBuild+=" --build-arg NODE_VERSION=$node --build-arg NG_NGINX_VERSION=$nginx_version -t $image $ngUrl"
+    isPnpm=$(isPnpmProject $directory $project $branch)
+    cmdBuild+=" --build-arg NODE_VERSION=$node --build-arg NG_NGINX_VERSION=$nginx_version --build-arg PNPM=$isPnpm -t $image $ngUrl"
 else
     cmdBuild+=" -t $image $jUrl"
 fi

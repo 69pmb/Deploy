@@ -1,0 +1,31 @@
+name: Typescript PNPM Quality
+
+inputs:
+  node-version:
+    description: "NodeJs version"
+    default: "16.x"
+  pnpm-version:
+    description: "pnpm version"
+    default: "latest"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v3
+    - uses: pnpm/action-setup@v2
+      with:
+        version: ${{ inputs.pnpm-version }}
+    - name: Set up NodeJs
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: "pnpm"
+    - name: Install dependencies
+      run: pnpm i --reporter=silent --frozen-lockfile --ignore-scripts
+      shell: bash
+    - name: Compile Typescript
+      run: pnpm exec tsc --noEmit
+      shell: bash
+    - name: Lint
+      run: pnpm run --if-present lint
+      shell: bash

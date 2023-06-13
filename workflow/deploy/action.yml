@@ -18,5 +18,6 @@ runs:
       env:
         GITHUB_PROJECT: ${{github.repository}}
         BRANCH: ${{ github.ref_name }}
-      run: curl -sG ${{ inputs.url }} -d project=$GITHUB_PROJECT -d branch=$BRANCH -d deployBranch=${{ env.WORKFLOW_BRANCH }} -d args=${{ inputs.args }} -d confFile=${{ inputs.confFile }}
+        SHA: ${{ github.sha }}
+      run: curl -sG ${{ inputs.url }} -d project=$GITHUB_PROJECT -d branch=$BRANCH -d sha=$SHA -d deployBranch=${{ env.WORKFLOW_BRANCH }} -d args=${{ inputs.args }} -d confFile=${{ inputs.confFile }}
       shell: bash

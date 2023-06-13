@@ -1,33 +1,51 @@
 # syntax=docker/dockerfile-upstream:master-labs
 ARG NODE_VERSION=16.20.0-alpine3.17
 ARG NG_NGINX_VERSION=latest
+ARG PNPM=pnpm
 ARG GITHUB_DIR
 ARG GITHUB_PROJECT
 ARG GITHUB_HASH
 
-FROM node:${NODE_VERSION} AS builder
-
+# Copy pnpm lock file
+FROM node:${NODE_VERSION} AS builder_pnpm
 ARG GITHUB_DIR
 ARG GITHUB_PROJECT
 ARG GITHUB_HASH
-
 WORKDIR /tmp/${GITHUB_PROJECT}
+ONBUILD ADD https://raw.githubusercontent.com/${GITHUB_DIR}/${GITHUB_PROJECT}/${GITHUB_HASH}/pnpm-lock.yaml .
+
+# Copy npm lock file
+FROM node:${NODE_VERSION} AS builder_npm
+ARG GITHUB_DIR
+ARG GITHUB_PROJECT
+ARG GITHUB_HASH
+WORKDIR /tmp/${GITHUB_PROJECT}
+ONBUILD ADD https://raw.githubusercontent.com/${GITHUB_DIR}/${GITHUB_PROJECT}/${GITHUB_HASH}/package-lock.json .
+
+FROM builder_${PNPM} AS builder
+
+ARG GITHUB_DIR
+ARG GITHUB_PROJECT
+ARG GITHUB_HASH
+ARG PNPM
 
 ADD https://raw.githubusercontent.com/${GITHUB_DIR}/${GITHUB_PROJECT}/${GITHUB_HASH}/package.json .
-ADD https://raw.githubusercontent.com/${GITHUB_DIR}/${GITHUB_PROJECT}/${GITHUB_HASH}/pnpm-lock.yaml .
 
 RUN apk -U upgrade && \
     apk add --no-cache git openssh && \
+    if [[ $PNPM == 'pnpm' ]]; then \
     if [[ $(echo "$(node -v | sed 's/v//g' | cut -d. -f1) >= 16" | bc) -eq 1 ]]; then \
     corepack enable && \
     corepack prepare pnpm@latest --activate; else \
-    npm install -g pnpm ; fi
+    npm install -g pnpm ; fi ; fi
 
-RUN pnpm i --frozen-lockfile --ignore-scripts
+RUN if [[ $PNPM == 'pnpm' ]]; then pnpm i --frozen-lockfile --ignore-scripts; else npm ci --ignore-scripts ; fi
 
 ADD https://github.com/${GITHUB_DIR}/${GITHUB_PROJECT}.git#${GITHUB_HASH} .
 
-RUN pnpm build --configuration production --progress false --extract-licenses=true
+RUN buildCmd="build --configuration production --progress false --extract-licenses=true" && \
+    if [[ $PNPM == 'pnpm']]; then buildCmd="pnpm $buildCmd" ; else buildCmd="npx ng $buildCmd" ; fi && \ 
+    eval "$buildCmd" 
 
 FROM pmb69/ng-nginx:${NG_NGINX_VERSION}
 
@@ -36,7 +54,7 @@ ARG NODE_VERSION
 ARG NG_NGINX_VERSION
 ARG GITHUB_DIR
 ARG GITHUB_PROJECT
-ARG GITHUB_HASH
+ARG GITHUB_SHA
 ARG BUILD_DATE
 ARG ENV_VAR
 
@@ -47,9 +65,9 @@ LABEL org.label-schema.schema-version="1.0"
 LABEL org.label-schema.name="pmb69/ng-nginx"
 LABEL org.label-schema.url="https://github.com/${GITHUB_DIR}/${GITHUB_PROJECT}"
 LABEL org.label-schema.vcs-url="https://github.com/69pmb/Deploy"
-LABEL org.label-schema.vcs-ref=$GITHUB_HASH
-LABEL org.label-schema.project=$GITHUB_PROJECT
-LABEL org.label-schema.build-date=$BUILD_DATE
+LABEL org.label-schema.vcs-ref=${GITHUB_SHA}
+LABEL org.label-schema.project=${GITHUB_PROJECT}
+LABEL org.label-schema.build-date=${BUILD_DATE}
 
 WORKDIR /usr/share/nginx/html
 

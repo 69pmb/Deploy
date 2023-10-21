@@ -6,6 +6,10 @@
     - source: url
       name: branch
     - source: url
+      name: sha
+    - source: url
+      name: deployBranch
+    - source: url
       name: args
     - source: url
       name: confFile

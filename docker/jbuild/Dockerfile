@@ -23,16 +23,16 @@ FROM eclipse-temurin:11-jre-jammy
 
 ARG GITHUB_DIR
 ARG GITHUB_PROJECT
-ARG GITHUB_HASH
+ARG GITHUB_SHA
 ARG BUILD_DATE
 
 LABEL MAINTAINER 69pmb <pmbroca@gmail.com>
 LABEL org.label-schema.schema-version="1.0"
 LABEL org.label-schema.url="https://github.com/${GITHUB_DIR}/${GITHUB_PROJECT}"
 LABEL org.label-schema.vcs-url="https://github.com/69pmb/Deploy"
-LABEL org.label-schema.vcs-ref=$GITHUB_HASH
-LABEL org.label-schema.project=$GITHUB_PROJECT
-LABEL org.label-schema.build-date=$BUILD_DATE
+LABEL org.label-schema.vcs-ref=${GITHUB_SHA}
+LABEL org.label-schema.project=${GITHUB_PROJECT}
+LABEL org.label-schema.build-date=${BUILD_DATE}
 
 WORKDIR /opt/app
 

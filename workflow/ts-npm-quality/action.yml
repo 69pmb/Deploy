@@ -1,4 +1,4 @@
-name: Typescript Quality
+name: Typescript NPM Quality
 
 inputs:
   node-version:

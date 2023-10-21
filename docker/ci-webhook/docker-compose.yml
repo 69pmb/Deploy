@@ -1,6 +1,6 @@
 services:
   webhook:
-    image: pmb69/ci-webhook
+    image: ci-webhook
     container_name: ci-webhook
     command: -verbose -hooks=hooks.yml -hotreload
     environment:

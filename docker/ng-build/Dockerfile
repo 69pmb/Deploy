@@ -43,7 +43,7 @@ RUN if [[ $PNPM == 'pnpm' ]]; then pnpm i --frozen-lockfile --ignore-scripts; el
 
 ADD https://github.com/${GITHUB_DIR}/${GITHUB_PROJECT}.git#${GITHUB_HASH} .
 
-RUN buildCmd="build --configuration production --progress false --extract-licenses=true" && \
+RUN buildCmd="build --configuration production --progress false --extract-licenses=true --optimization false" && \
     if [[ $PNPM == 'pnpm']]; then buildCmd="pnpm $buildCmd" ; else buildCmd="npx ng $buildCmd" ; fi && \ 
     eval "$buildCmd" 
 

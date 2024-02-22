@@ -22,12 +22,12 @@ valueSeparator=","
 
 # Mapping Docker Node alpine image by Angular version
 declare -A NodeMap
-NodeMap[10]=14.18.2-alpine3.12
-NodeMap[11]=14.18.2-alpine3.12
-NodeMap[12]=14.18.2-alpine3.12
-NodeMap[13]=16.20.0-alpine3.17
-NodeMap[14]=16.20.0-alpine3.17
-NodeMap[15]=16.20.0-alpine3.17
+NodeMap[11]=14.21.3-alpine3.17
+NodeMap[12]=14.21.3-alpine3.17
+NodeMap[13]=16.20.2-alpine3.18
+NodeMap[14]=16.20.2-alpine3.18
+NodeMap[15]=18.19.1-alpine3.19
+NodeMap[16]=18.19.1-alpine3.19
 
 # Find docker file argument value
 function getArgVersion() {

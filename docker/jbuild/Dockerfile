@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile-upstream:1.6.0-labs
+# syntax=docker/dockerfile-upstream:1.7.0-labs
 ARG GITHUB_DIR
 ARG GITHUB_PROJECT
 ARG GITHUB_HASH

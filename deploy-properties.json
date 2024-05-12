@@ -2,13 +2,11 @@
   "apps": [
     {
       "name": "AllMovies",
-      "port": 4242,
-      "size": 2400
+      "port": 4242
     },
     {
       "name": "NgMusic",
-      "port": 7575,
-      "size": 300
+      "port": 7575
     },
     {
       "name": "Dsm-landing",
@@ -16,12 +14,15 @@
     },
     {
       "name": "NgWeatherWatcher",
-      "size": 300,
       "port": 6363
     },
     {
       "name": "WeatherWatcher",
       "port": 7878
+    },
+    {
+      "name": "user-api",
+      "port": 4141
     }
   ]
 }

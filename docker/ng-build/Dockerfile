@@ -33,20 +33,20 @@ ADD https://raw.githubusercontent.com/${GITHUB_DIR}/${GITHUB_PROJECT}/${GITHUB_H
 
 RUN apk -U upgrade && \
     apk add --no-cache git openssh && \
-    if [[ $PNPM == 'pnpm' ]]; then \
+    if [ "$PNPM" = 'pnpm' ]; then \
     node_version=$(node -v | sed 's/v//g' | cut -d. -f1) && \
-    if [[ $(echo "$node_version >= 16" | bc) -eq 1 ]]; then \
+    if [ "$(echo "$node_version >= 16" | bc)" -eq 1 ]; then \
     corepack enable && \
-    corepack prepare pnpm@latest-$(echo $node_version | awk '{if ($1>=18) print "9"; else if ($1==16) print "8"; else print "7"}') --activate; else \
+    corepack prepare pnpm@latest-"$(echo "$node_version" | awk '{if ($1>=18) print "9"; else if ($1==16) print "8"; else print "7"}')" --activate; else \
     npm install -g pnpm ; fi ; fi
 
-RUN if [[ $PNPM == 'pnpm' ]]; then pnpm i --frozen-lockfile --ignore-scripts; else npm ci --ignore-scripts ; fi
+RUN if [ "$PNPM" = 'pnpm' ]; then pnpm i --frozen-lockfile --ignore-scripts; else npm ci --ignore-scripts ; fi
 
 ADD https://github.com/${GITHUB_DIR}/${GITHUB_PROJECT}.git#${GITHUB_HASH} .
 
 RUN buildCmd="build --configuration production --progress false --extract-licenses=true" && \
-    if [[ $PNPM == 'pnpm']]; then buildCmd="pnpm $buildCmd" ; else buildCmd="npx ng $buildCmd" ; fi && \ 
-    eval "$buildCmd" 
+    if [ "$PNPM" = 'pnpm' ]; then buildCmd="pnpm $buildCmd" ; else buildCmd="npx ng $buildCmd" ; fi && \
+    eval "$buildCmd"
 
 FROM pmb69/ng-nginx:${NG_NGINX_VERSION}
 

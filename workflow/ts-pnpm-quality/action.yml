@@ -23,7 +23,7 @@ runs:
         node-version: ${{ inputs.node-version }}
         cache: "pnpm"
     - name: Install dependencies
-      run: pnpm i --reporter=silent --frozen-lockfile --ignore-scripts
+      run: pnpm i --frozen-lockfile --ignore-scripts --prefer-offline
       shell: bash
     - name: Compile Typescript
       run: pnpm exec tsc --noEmit

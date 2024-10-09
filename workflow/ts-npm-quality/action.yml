@@ -2,15 +2,15 @@ name: Typescript NPM Quality
 
 inputs:
   node-version:
-    description: "NodeJs version"
+    description: "Node.js version"
     default: "16.x"
 
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v3
-    - name: Set up NodeJs
-      uses: actions/setup-node@v3
+    - uses: actions/checkout@v4
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node-version }}
         cache: "npm"

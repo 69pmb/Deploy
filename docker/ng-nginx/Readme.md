@@ -1,5 +1,5 @@
 ## What is Ng-Nginx ?
-The goal of this image is to serve a static site developed with Angular, NodeJS or plain JS on a Raspberry Pi.  
+The goal of this image is to serve a static site developed with Angular, Node.js or plain JS on a Raspberry Pi.  
 It is based on the [arm32v7/nginx](https://hub.docker.com/r/arm32v7/nginx/) image.
 
 ## How to use it ?

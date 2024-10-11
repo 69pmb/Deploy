@@ -3,15 +3,11 @@ ARG GITHUB_DIR
 ARG GITHUB_PROJECT
 ARG GITHUB_HASH
 
-FROM eclipse-temurin:17-jdk-jammy AS builder
+FROM arm32v7/maven:3.9-eclipse-temurin-17 AS builder
 
 ARG GITHUB_DIR
 ARG GITHUB_PROJECT
 ARG GITHUB_HASH
-
-RUN set -ex && \
-    apt-get -qq -y update && \
-    apt-get -qq -y install maven
 
 WORKDIR /tmp/${GITHUB_PROJECT}
 

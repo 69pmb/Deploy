@@ -15,10 +15,10 @@ runs:
         java-version: "17"
         cache: "maven"
     - name: Lint with Maven
-      run: mvn git-code-format:validate-code-format -Dgcf.globPattern=**/*
+      run: mvn git-code-format:validate-code-format -Dgcf.globPattern=**/* --no-transfer-progress
       shell: bash
     - name: Test with Maven
-      run: mvn org.jacoco:jacoco-maven-plugin:prepare-agent test org.jacoco:jacoco-maven-plugin:report -Dmaven.test.failure.ignore=false --batch-mode
+      run: mvn org.jacoco:jacoco-maven-plugin:prepare-agent test org.jacoco:jacoco-maven-plugin:report -Dmaven.test.failure.ignore=false --batch-mode --no-transfer-progress
       shell: bash
     - name: Upload code coverage results
       uses: actions/upload-artifact@v4

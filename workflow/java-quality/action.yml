@@ -1,5 +1,10 @@
 name: Java Quality
 
+inputs:
+  java-version:
+    description: "Java version"
+    default: "17"
+
 runs:
   using: "composite"
   steps:
@@ -8,11 +13,11 @@ runs:
       uses: stCarolas/setup-maven@v5
       with:
         maven-version: 3.9.9
-    - name: Set up JDK 17
+    - name: Set up JDK
       uses: actions/setup-java@v4
       with:
         distribution: "temurin"
-        java-version: "17"
+        java-version: ${{ inputs.java-version }}
         cache: "maven"
     - name: Lint with Maven
       run: mvn git-code-format:validate-code-format -Dgcf.globPattern=**/* --no-transfer-progress

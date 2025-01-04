@@ -28,6 +28,9 @@ NodeMap[13]=16.20.2-alpine3.18
 NodeMap[14]=16.20.2-alpine3.18
 NodeMap[15]=18.19.1-alpine3.19
 NodeMap[16]=18.19.1-alpine3.19
+NodeMap[17]=18.19.1-alpine3.19
+NodeMap[18]=20.18.1-alpine3.21
+NodeMap[19]=20.18.1-alpine3.21
 
 # Find docker file argument value
 function getArgVersion() {

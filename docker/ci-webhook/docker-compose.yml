@@ -1,6 +1,6 @@
 services:
   webhook:
-    image: ci-webhook
+    build: .
     container_name: ci-webhook
     command: -verbose -hooks=hooks.yml -hotreload
     environment:

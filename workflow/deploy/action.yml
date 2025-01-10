@@ -7,6 +7,9 @@ inputs:
     description: "Deploy arguments"
   confFile:
     description: "Configuration absolute path, if not provided searching for a docker-compose file"
+  force-install:
+    description: "To force npm install"
+    default: "false"
 
 runs:
   using: "composite"
@@ -14,10 +17,13 @@ runs:
     - id: deployBranch
       shell: bash
       run: echo "WORKFLOW_BRANCH=$(echo $GITHUB_ACTION_PATH | sed 's/.*deploy\///g' | sed 's/\/workflow.*//g')" >> $GITHUB_ENV
+    - id: forceInstall
+      shell: bash
+      run: echo "FORCE_INSTALL=$([ "${{ inputs.force-install }}" = "true" ] && echo "--force" || echo "")" >> $GITHUB_ENV
     - name: Build and deploy
       env:
         GITHUB_PROJECT: ${{github.repository}}
         BRANCH: ${{ github.ref_name }}
         SHA: ${{ github.sha }}
-      run: curl -sG ${{ inputs.url }} -d project=$GITHUB_PROJECT -d branch=$BRANCH -d sha=$SHA -d deployBranch=${{ env.WORKFLOW_BRANCH }} -d args=${{ inputs.args }} -d confFile=${{ inputs.confFile }}
+      run: curl -sG ${{ inputs.url }} -d project=$GITHUB_PROJECT -d branch=$BRANCH -d sha=$SHA -d deployBranch=${{ env.WORKFLOW_BRANCH }} -d args=${{ inputs.args }} -d confFile=${{ inputs.confFile }} -d forceInstall=${{ env.FORCE_INSTALL }}
       shell: bash

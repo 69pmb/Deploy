@@ -10,6 +10,7 @@ args=$5
 confFile=$6
 directory=$7
 port=$8
+forceInstall=$9
 
 ## Constants
 deployRepo="https://raw.githubusercontent.com/69pmb/Deploy"
@@ -144,7 +145,7 @@ if [[ $isAngular -eq 1 ]]; then
 
     nginx_version=$(getArgVersion "ng_nginx")
     isPnpm=$(isPnpmProject $directory $project $branch)
-    cmdBuild+=" --build-arg NODE_VERSION=$node --build-arg NG_NGINX_VERSION=$nginx_version --build-arg PNPM=$isPnpm -t $image $ngUrl"
+    cmdBuild+=" --build-arg NODE_VERSION=$node --build-arg NG_NGINX_VERSION=$nginx_version --build-arg PNPM=$isPnpm --build-arg FORCE_INSTALL=$forceInstall -t $image $ngUrl"
 else
     cmdBuild+=" -t $image $jUrl"
 fi

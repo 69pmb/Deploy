@@ -17,4 +17,6 @@
       name: directory
     - source: url
       name: port
+    - source: url
+      name: forceInstall
   command-working-directory: "/config"

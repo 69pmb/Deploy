@@ -4,6 +4,7 @@ ARG PNPM=pnpm
 ARG GITHUB_DIR
 ARG GITHUB_PROJECT
 ARG GITHUB_HASH
+ARG FORCE_INSTALL
 
 # Copy pnpm lock file
 FROM node:${NODE_VERSION} AS builder_pnpm
@@ -27,6 +28,7 @@ ARG GITHUB_DIR
 ARG GITHUB_PROJECT
 ARG GITHUB_HASH
 ARG PNPM
+ARG FORCE_INSTALL
 
 ADD https://raw.githubusercontent.com/${GITHUB_DIR}/${GITHUB_PROJECT}/${GITHUB_HASH}/package.json .
 
@@ -39,13 +41,14 @@ RUN apk -U upgrade && \
     corepack prepare pnpm@latest-"$(echo "$node_version" | awk '{if ($1>=18) print "9"; else if ($1==16) print "8"; else print "7"}')" --activate; else \
     npm install -g pnpm ; fi ; fi
 
-RUN if [ "$PNPM" = 'pnpm' ]; then pnpm i --frozen-lockfile --ignore-scripts; else npm ci --ignore-scripts ; fi
+
+RUN if [ "$PNPM" = 'pnpm' ]; then installCmd="pnpm i --frozen-lockfile"; else installCmd="npm ci"; fi && \
+    eval "$installCmd --ignore-scripts ${FORCE_INSTALL}"
 
 ADD https://github.com/${GITHUB_DIR}/${GITHUB_PROJECT}.git#${GITHUB_HASH} .
 
-RUN buildCmd="build --configuration production --progress false --extract-licenses=true" && \
-    if [ "$PNPM" = 'pnpm' ]; then buildCmd="pnpm $buildCmd" ; else buildCmd="npx ng $buildCmd" ; fi && \
-    eval "$buildCmd"
+RUN if [ "$PNPM" = 'pnpm' ]; then buildCmd="pnpm" ; else buildCmd="npx ng" ; fi && \
+    eval "$buildCmd build --configuration production --progress false --extract-licenses=true"
 
 FROM pmb69/ng-nginx:${NG_NGINX_VERSION}
 

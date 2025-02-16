@@ -13,7 +13,7 @@ WORKDIR /tmp/${GITHUB_PROJECT}
 
 ADD https://github.com/${GITHUB_DIR}/${GITHUB_PROJECT}.git#${GITHUB_HASH} .
 
-RUN mvn clean package -DskipTests -Dgcf.skip=true -q
+RUN mvn clean package -DskipTests -Dgcf.skip=true -Dmaven.test.skip=true -q
 
 FROM eclipse-temurin:17-jre-jammy
 

@@ -25,5 +25,5 @@ runs:
         GITHUB_PROJECT: ${{github.repository}}
         BRANCH: ${{ github.ref_name }}
         SHA: ${{ github.sha }}
-      run: curl -sG ${{ inputs.url }} -d project=$GITHUB_PROJECT -d branch=$BRANCH -d sha=$SHA -d deployBranch=${{ env.WORKFLOW_BRANCH }} -d args=${{ inputs.args }} -d confFile=${{ inputs.confFile }} -d forceInstall=${{ env.FORCE_INSTALL }}
+      run: curl -sGvk ${{ inputs.url }} -d project=$GITHUB_PROJECT -d branch=$BRANCH -d sha=$SHA -d deployBranch=${{ env.WORKFLOW_BRANCH }} -d args=${{ inputs.args }} -d confFile=${{ inputs.confFile }} -d forceInstall=${{ env.FORCE_INSTALL }}
       shell: bash
